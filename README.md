@@ -410,9 +410,39 @@ payload -- const char*
 #### Node.js连接mqtt
 
 **命令:** `npm install mqtt` 
-
 命令在项目文件夹中会生成 **node_module** 和 **package.json** 文件
 
-`const mqtt = require('mqtt');`
+`const mqtt = require('mqtt');` 使文件采用CJS标准
 
-使文件采用CJS标准
+代码文件中加入以下代码创建Node.js服务器连接到http://localhost:3000并打开文件 **blink.html**
+```javascript
+const http = require('http');
+const fs = require('fs');
+//创建服务器打开html文件
+http.createServer((req,res) => {
+    var fileName = "." + req.url;
+    if(fileName == "./"){
+        fileName = "./blink.html";
+    }
+    else {
+        res.writeHead(404);
+        res.end('File not found');
+    }
+    fs.readFile(fileName,(err,data) => {
+        if(err) {
+            res.writeHead(404);
+            res.end('File not found');
+        }
+        else {
+            res.writeHead(200,{'content-type' : 'blink/html'});
+            res.end(data.toString());
+        }
+    });
+    
+}).listen(3000,() => {
+    console.log('Server is running');
+});
+```
+<!--但访问时直接下载了html文件而没有直接运行-->
+
+代码加入接收数据功能 -> 见app_mqtt(new).js
